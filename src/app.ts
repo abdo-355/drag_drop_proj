@@ -1,3 +1,35 @@
+// validation
+interface Validatable {
+  value: string | number;
+  required?: boolean;
+  minlength?: number;
+  maxlength?: number;
+  min?: number;
+  max?: number;
+}
+
+const validate = (input: Validatable) => {
+  let isValid = true;
+
+  if (input.required) {
+    isValid = isValid && input.value.toString().trim().length !== 0;
+  }
+  if (input.minlength != null && typeof input.value === "string") {
+    isValid = isValid && input.value.length >= input.minlength;
+  }
+  if (input.maxlength && typeof input.value === "string") {
+    isValid = isValid && input.value.length <= input.maxlength;
+  }
+  if (input.min != null && typeof input.value === "number") {
+    isValid = isValid && input.value >= input.min;
+  }
+  if (input.max && typeof input.value === "number") {
+    isValid = isValid && input.value <= input.max;
+  }
+
+  return isValid;
+};
+
 // autobind decorator
 const autoBind = (_: any, _2: string, descriptor: PropertyDescriptor) => {
   const originalMethod = descriptor.value;
@@ -52,10 +84,27 @@ class ProjectInput {
     const enteredDescription = this.descriptionInputElement.value;
     const enteredPeople = this.peopleInputElement.value;
 
+    const titleValidation: Validatable = {
+      value: enteredTitle,
+      required: true,
+    };
+
+    const descriptionValidation: Validatable = {
+      value: enteredDescription,
+      required: true,
+      minlength: 5,
+      maxlength: 200,
+    };
+    const PeopleValidation: Validatable = {
+      value: enteredPeople,
+      required: true,
+      min: 1,
+      max: 10,
+    };
     if (
-      enteredTitle.trim().length === 0 ||
-      enteredDescription.trim().length === 0 ||
-      enteredPeople.trim().length === 0
+      !validate(titleValidation) ||
+      !validate(descriptionValidation) ||
+      !validate(PeopleValidation)
     ) {
       alert("Invalid input, Please try again!");
       return;
@@ -70,6 +119,7 @@ class ProjectInput {
     this.peopleInputElement.value = "";
   };
 
+  @autoBind
   private submitHandler(event: Event) {
     event.preventDefault();
     const userInput = this.gatherUserInput();
