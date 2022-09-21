@@ -28,7 +28,7 @@ class ProjectState {
     this.projects.push(project);
 
     for (const listenerFn of this.listeners) {
-      listenerFn(...this.listeners);
+      listenerFn([...this.projects]);
     }
   };
 }
@@ -162,7 +162,7 @@ class ProjectInput {
     const userInput = this.gatherUserInput();
     if (Array.isArray(userInput)) {
       const [title, desc, people] = userInput;
-      console.log(title, desc, people);
+      projectState.addProject(title, desc, people);
       this.clearInputs();
     }
   }
@@ -177,6 +177,7 @@ class ProjectList {
   template: HTMLTemplateElement;
   host: HTMLDivElement;
   section: HTMLElement;
+  assignedProjects: any[];
 
   constructor(private type: "active" | "finished") {
     this.template = document.getElementById(
@@ -188,6 +189,13 @@ class ProjectList {
     this.section = importedNode.firstElementChild as HTMLElement;
     this.section.id = `${this.type}-projects`;
 
+    projectState.addlistener((projects: any[]) => {
+      this.assignedProjects = projects;
+      this.renderProjects();
+    });
+
+    this.assignedProjects = [];
+
     this.attach();
     this.renderContent();
   }
@@ -196,7 +204,20 @@ class ProjectList {
     this.host.insertAdjacentElement("beforeend", this.section);
   };
 
+  private renderProjects = () => {
+    const listElement = document.getElementById(
+      `${this.type}-projects-list`
+    )! as HTMLUListElement;
+    for (const prj of this.assignedProjects) {
+      const listItem = document.createElement("li");
+      listItem.innerText = prj.title;
+      listElement.appendChild(listItem);
+    }
+  };
+
   private renderContent = () => {
+    const listId = `${this.type}-projects-list`;
+    this.section.querySelector("ul")!.id = listId;
     this.section.querySelector("h2")!.innerText =
       this.type.toUpperCase() + " PROJECTS";
   };
