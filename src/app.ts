@@ -135,4 +135,37 @@ class ProjectInput {
   }
 }
 
+//project list class
+class ProjectList {
+  template: HTMLTemplateElement;
+  host: HTMLDivElement;
+  section: HTMLElement;
+
+  constructor(private type: "active" | "finished") {
+    this.template = document.getElementById(
+      "project-list"
+    )! as HTMLTemplateElement;
+    this.host = document.getElementById("app")! as HTMLDivElement;
+
+    const importedNode = document.importNode(this.template.content, true);
+    this.section = importedNode.firstElementChild as HTMLElement;
+    this.section.id = `${this.type}-projects`;
+
+    this.attach();
+    this.renderContent();
+  }
+
+  private attach = () => {
+    this.host.insertAdjacentElement("beforeend", this.section);
+  };
+
+  private renderContent = () => {
+    this.section.querySelector("h2")!.innerText =
+      this.type.toUpperCase() + " PROJECTS";
+  };
+}
+
 const prj = new ProjectInput();
+
+const active = new ProjectList("active");
+const finished = new ProjectList("finished");
