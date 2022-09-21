@@ -1,3 +1,38 @@
+// manage state
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  people: number;
+}
+
+class ProjectState {
+  private projects: Project[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {}
+
+  static getInstance = () => {
+    if (!this.instance) {
+      this.instance = new ProjectState();
+    }
+    return this.instance;
+  };
+
+  addProject = (title: string, description: string, numOfPeople: number) => {
+    const project = {
+      id: Math.random().toString(),
+      title: title,
+      description: description,
+      people: numOfPeople,
+    };
+
+    this.projects.push(project);
+  };
+}
+
+const projectState = ProjectState.getInstance();
+
 // validation
 interface Validatable {
   value: string | number;
@@ -166,6 +201,5 @@ class ProjectList {
 }
 
 const prj = new ProjectInput();
-
 const active = new ProjectList("active");
 const finished = new ProjectList("finished");
