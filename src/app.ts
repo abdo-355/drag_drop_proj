@@ -1,13 +1,7 @@
 // manage state
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  people: number;
-}
-
 class ProjectState {
-  private projects: Project[] = [];
+  private listeners: any[] = [];
+  private projects: any[] = [];
   private static instance: ProjectState;
 
   private constructor() {}
@@ -19,6 +13,10 @@ class ProjectState {
     return this.instance;
   };
 
+  addlistener = (listenerFn: Function) => {
+    this.listeners.push(listenerFn);
+  };
+
   addProject = (title: string, description: string, numOfPeople: number) => {
     const project = {
       id: Math.random().toString(),
@@ -28,6 +26,10 @@ class ProjectState {
     };
 
     this.projects.push(project);
+
+    for (const listenerFn of this.listeners) {
+      listenerFn(...this.listeners);
+    }
   };
 }
 
