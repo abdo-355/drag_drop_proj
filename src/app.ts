@@ -18,7 +18,7 @@ class Project {
 type Listener = (items: Project[]) => void;
 
 class ProjectState {
-  private listeners: any[] = [];
+  private listeners: Listener[] = [];
   private projects: Project[] = [];
   private static instance: ProjectState;
 
@@ -208,7 +208,7 @@ class ProjectList {
     this.section = importedNode.firstElementChild as HTMLElement;
     this.section.id = `${this.type}-projects`;
 
-    projectState.addlistener((projects: any[]) => {
+    projectState.addlistener((projects: Project[]) => {
       this.assignedProjects = projects;
       this.renderProjects();
     });
