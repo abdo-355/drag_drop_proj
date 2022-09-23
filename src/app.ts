@@ -218,6 +218,27 @@ class ProjectInput extends component<HTMLDivElement, HTMLFormElement> {
   renderContent() {}
 }
 
+// project item class
+class ProjectItem extends component<HTMLUListElement, HTMLLIElement> {
+  private project: Project;
+
+  constructor(hostId: string, project: Project) {
+    super("single-project", hostId, false, project.id);
+    this.project = project;
+
+    this.renderContent();
+  }
+
+  configure() {}
+
+  renderContent() {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent =
+      this.project.people.toString();
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+}
+
 //project list class
 class ProjectList extends component<HTMLDivElement, HTMLElement> {
   assignedProjects: Project[];
@@ -257,9 +278,7 @@ class ProjectList extends component<HTMLDivElement, HTMLElement> {
     )! as HTMLUListElement;
     listElement.innerHTML = "";
     for (const prj of this.assignedProjects) {
-      const listItem = document.createElement("li");
-      listItem.innerText = prj.title;
-      listElement.appendChild(listItem);
+      new ProjectItem(this.element.querySelector("ul")!.id, prj);
     }
   };
 }
